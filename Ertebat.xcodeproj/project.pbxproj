@@ -7,21 +7,71 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3B850BC6D0551BF097D8F08F /* Pods_Ertebat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F62697F6853B221EE336187 /* Pods_Ertebat.framework */; };
 		5304792920201335002E6467 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5304792820201335002E6467 /* AppDelegate.swift */; };
-		5304792B20201335002E6467 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5304792A20201335002E6467 /* ViewController.swift */; };
+		5304792B20201335002E6467 /* LoginSignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5304792A20201335002E6467 /* LoginSignUpViewController.swift */; };
 		5304792E20201335002E6467 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5304792C20201335002E6467 /* Main.storyboard */; };
 		5304793020201335002E6467 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5304792F20201335002E6467 /* Assets.xcassets */; };
 		5304793320201335002E6467 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5304793120201335002E6467 /* LaunchScreen.storyboard */; };
+		5304793B202013D4002E6467 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5304793A202013D4002E6467 /* GoogleService-Info.plist */; };
+		5304793F20215B15002E6467 /* PostsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5304793E20215B15002E6467 /* PostsTableViewController.swift */; };
+		5304794120217086002E6467 /* NewPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5304794020217086002E6467 /* NewPostViewController.swift */; };
+		53047943202172E8002E6467 /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53047942202172E8002E6467 /* TableViewCell.swift */; };
+		530479482022D388002E6467 /* SelectAName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 530479472022D388002E6467 /* SelectAName.swift */; };
+		5304794A2022D3A7002E6467 /* SelectAProfilePicture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 530479492022D3A7002E6467 /* SelectAProfilePicture.swift */; };
+		5304794D20242ADA002E6467 /* UsersCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5304794C20242ADA002E6467 /* UsersCollectionViewCell.swift */; };
+		5304794F20242C7A002E6467 /* UsersCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5304794E20242C7A002E6467 /* UsersCollectionViewController.swift */; };
+		5328D682202E28650039B65A /* ChatsCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5328D681202E28650039B65A /* ChatsCollectionViewController.swift */; };
+		5328D684202E2BF20039B65A /* AllDataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5328D683202E2BF20039B65A /* AllDataModels.swift */; };
+		5328D686202E8AA60039B65A /* ChatsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5328D685202E8AA60039B65A /* ChatsCollectionViewCell.swift */; };
+		536533C120244DA800F3870F /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533C020244DA800F3870F /* ProfileViewController.swift */; };
+		536533C32029484A00F3870F /* MessageThreadController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533C22029484A00F3870F /* MessageThreadController.swift */; };
+		536533C520295F5600F3870F /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533C420295F5600F3870F /* MessageCell.swift */; };
+		536533E8202983AB00F3870F /* MessageWritingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533E7202983AB00F3870F /* MessageWritingView.swift */; };
+		536533EA2029843700F3870F /* MessageWritingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 536533E92029843700F3870F /* MessageWritingView.xib */; };
+		536533ED202A2AA600F3870F /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533EC202A2AA600F3870F /* Messages.swift */; };
+		536533EF202A3CAB00F3870F /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533EE202A3CAB00F3870F /* Protocols.swift */; };
+		536533F1202AA54300F3870F /* CustomNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533F0202AA54200F3870F /* CustomNavigationBar.swift */; };
+		536533F3202BF27800F3870F /* CustomNavController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533F2202BF27800F3870F /* CustomNavController.swift */; };
+		536533F5202CDB4900F3870F /* BarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533F4202CDB4900F3870F /* BarView.swift */; };
+		536533F7202D078500F3870F /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533F6202D078500F3870F /* CustomTabBar.swift */; };
+		536533FB202D085000F3870F /* TabBarSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533FA202D085000F3870F /* TabBarSegue.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2B59EE98E5AED03266CE6D9B /* Pods-Ertebat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ertebat.release.xcconfig"; path = "Pods/Target Support Files/Pods-Ertebat/Pods-Ertebat.release.xcconfig"; sourceTree = "<group>"; };
 		5304792520201334002E6467 /* Ertebat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ertebat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5304792820201335002E6467 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		5304792A20201335002E6467 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		5304792A20201335002E6467 /* LoginSignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSignUpViewController.swift; sourceTree = "<group>"; };
 		5304792D20201335002E6467 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5304792F20201335002E6467 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5304793220201335002E6467 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5304793420201335002E6467 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5304793A202013D4002E6467 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		5304793E20215B15002E6467 /* PostsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostsTableViewController.swift; sourceTree = "<group>"; };
+		5304794020217086002E6467 /* NewPostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostViewController.swift; sourceTree = "<group>"; };
+		53047942202172E8002E6467 /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
+		530479472022D388002E6467 /* SelectAName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectAName.swift; sourceTree = "<group>"; };
+		530479492022D3A7002E6467 /* SelectAProfilePicture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectAProfilePicture.swift; sourceTree = "<group>"; };
+		5304794C20242ADA002E6467 /* UsersCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersCollectionViewCell.swift; sourceTree = "<group>"; };
+		5304794E20242C7A002E6467 /* UsersCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersCollectionViewController.swift; sourceTree = "<group>"; };
+		5328D681202E28650039B65A /* ChatsCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsCollectionViewController.swift; sourceTree = "<group>"; };
+		5328D683202E2BF20039B65A /* AllDataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllDataModels.swift; sourceTree = "<group>"; };
+		5328D685202E8AA60039B65A /* ChatsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsCollectionViewCell.swift; sourceTree = "<group>"; };
+		536533C020244DA800F3870F /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		536533C22029484A00F3870F /* MessageThreadController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageThreadController.swift; sourceTree = "<group>"; };
+		536533C420295F5600F3870F /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
+		536533E7202983AB00F3870F /* MessageWritingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageWritingView.swift; sourceTree = "<group>"; };
+		536533E92029843700F3870F /* MessageWritingView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageWritingView.xib; sourceTree = "<group>"; };
+		536533EC202A2AA600F3870F /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
+		536533EE202A3CAB00F3870F /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
+		536533F0202AA54200F3870F /* CustomNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationBar.swift; sourceTree = "<group>"; };
+		536533F2202BF27800F3870F /* CustomNavController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavController.swift; sourceTree = "<group>"; };
+		536533F4202CDB4900F3870F /* BarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarView.swift; sourceTree = "<group>"; };
+		536533F6202D078500F3870F /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
+		536533FA202D085000F3870F /* TabBarSegue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarSegue.swift; sourceTree = "<group>"; };
+		6F62697F6853B221EE336187 /* Pods_Ertebat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Ertebat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		AE55EFAB4FD3CDBBD6EA8041 /* Pods-Ertebat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ertebat.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Ertebat/Pods-Ertebat.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,6 +79,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3B850BC6D0551BF097D8F08F /* Pods_Ertebat.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40,6 +91,8 @@
 			children = (
 				5304792720201334002E6467 /* Ertebat */,
 				5304792620201334002E6467 /* Products */,
+				A80BCB12E0AFCABDC81CD9B1 /* Pods */,
+				751A009F0FA0EA82AC7C8C7B /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -54,14 +107,78 @@
 		5304792720201334002E6467 /* Ertebat */ = {
 			isa = PBXGroup;
 			children = (
+				536533EB202A2A8900F3870F /* Models */,
+				5304794B20242A8B002E6467 /* Views */,
+				530479462022D31B002E6467 /* Controllers */,
 				5304792820201335002E6467 /* AppDelegate.swift */,
-				5304792A20201335002E6467 /* ViewController.swift */,
 				5304792C20201335002E6467 /* Main.storyboard */,
 				5304792F20201335002E6467 /* Assets.xcassets */,
 				5304793120201335002E6467 /* LaunchScreen.storyboard */,
 				5304793420201335002E6467 /* Info.plist */,
+				5304793A202013D4002E6467 /* GoogleService-Info.plist */,
+				536533EE202A3CAB00F3870F /* Protocols.swift */,
 			);
 			path = Ertebat;
+			sourceTree = "<group>";
+		};
+		530479462022D31B002E6467 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				5304792A20201335002E6467 /* LoginSignUpViewController.swift */,
+				5304794020217086002E6467 /* NewPostViewController.swift */,
+				5304793E20215B15002E6467 /* PostsTableViewController.swift */,
+				530479472022D388002E6467 /* SelectAName.swift */,
+				530479492022D3A7002E6467 /* SelectAProfilePicture.swift */,
+				5304794E20242C7A002E6467 /* UsersCollectionViewController.swift */,
+				536533C020244DA800F3870F /* ProfileViewController.swift */,
+				536533C22029484A00F3870F /* MessageThreadController.swift */,
+				536533F2202BF27800F3870F /* CustomNavController.swift */,
+				536533F6202D078500F3870F /* CustomTabBar.swift */,
+				536533FA202D085000F3870F /* TabBarSegue.swift */,
+				5328D681202E28650039B65A /* ChatsCollectionViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		5304794B20242A8B002E6467 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				53047942202172E8002E6467 /* TableViewCell.swift */,
+				5304794C20242ADA002E6467 /* UsersCollectionViewCell.swift */,
+				536533C420295F5600F3870F /* MessageCell.swift */,
+				536533E7202983AB00F3870F /* MessageWritingView.swift */,
+				536533E92029843700F3870F /* MessageWritingView.xib */,
+				536533F0202AA54200F3870F /* CustomNavigationBar.swift */,
+				536533F4202CDB4900F3870F /* BarView.swift */,
+				5328D685202E8AA60039B65A /* ChatsCollectionViewCell.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		536533EB202A2A8900F3870F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				536533EC202A2AA600F3870F /* Messages.swift */,
+				5328D683202E2BF20039B65A /* AllDataModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		751A009F0FA0EA82AC7C8C7B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6F62697F6853B221EE336187 /* Pods_Ertebat.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A80BCB12E0AFCABDC81CD9B1 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				AE55EFAB4FD3CDBBD6EA8041 /* Pods-Ertebat.debug.xcconfig */,
+				2B59EE98E5AED03266CE6D9B /* Pods-Ertebat.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -71,9 +188,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5304793720201335002E6467 /* Build configuration list for PBXNativeTarget "Ertebat" */;
 			buildPhases = (
+				4DD975ED439E8C30E74023B8 /* [CP] Check Pods Manifest.lock */,
 				5304792120201334002E6467 /* Sources */,
 				5304792220201334002E6467 /* Frameworks */,
 				5304792320201334002E6467 /* Resources */,
+				A4A54BCD73945E2F3FBA3417 /* [CP] Embed Pods Frameworks */,
+				7BD000DF07FB6A7FA90DD6B8 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -126,17 +246,114 @@
 				5304793320201335002E6467 /* LaunchScreen.storyboard in Resources */,
 				5304793020201335002E6467 /* Assets.xcassets in Resources */,
 				5304792E20201335002E6467 /* Main.storyboard in Resources */,
+				536533EA2029843700F3870F /* MessageWritingView.xib in Resources */,
+				5304793B202013D4002E6467 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4DD975ED439E8C30E74023B8 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Ertebat-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7BD000DF07FB6A7FA90DD6B8 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Ertebat/Pods-Ertebat-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A4A54BCD73945E2F3FBA3417 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Ertebat/Pods-Ertebat-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/BoringSSL/openssl.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
+				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC/GRPCClient.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC-Core/grpc.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC-ProtoRPC/ProtoRPC.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC-RxLibrary/RxLibrary.framework",
+				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GRPCClient.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpc.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ProtoRPC.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxLibrary.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Ertebat/Pods-Ertebat-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		5304792120201334002E6467 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5304792B20201335002E6467 /* ViewController.swift in Sources */,
+				536533F5202CDB4900F3870F /* BarView.swift in Sources */,
+				536533EF202A3CAB00F3870F /* Protocols.swift in Sources */,
+				536533F7202D078500F3870F /* CustomTabBar.swift in Sources */,
+				530479482022D388002E6467 /* SelectAName.swift in Sources */,
+				5304794D20242ADA002E6467 /* UsersCollectionViewCell.swift in Sources */,
+				536533FB202D085000F3870F /* TabBarSegue.swift in Sources */,
+				536533E8202983AB00F3870F /* MessageWritingView.swift in Sources */,
+				536533F1202AA54300F3870F /* CustomNavigationBar.swift in Sources */,
+				5328D682202E28650039B65A /* ChatsCollectionViewController.swift in Sources */,
+				536533ED202A2AA600F3870F /* Messages.swift in Sources */,
+				536533C120244DA800F3870F /* ProfileViewController.swift in Sources */,
+				5328D684202E2BF20039B65A /* AllDataModels.swift in Sources */,
+				5304794F20242C7A002E6467 /* UsersCollectionViewController.swift in Sources */,
+				5304794A2022D3A7002E6467 /* SelectAProfilePicture.swift in Sources */,
+				5328D686202E8AA60039B65A /* ChatsCollectionViewCell.swift in Sources */,
+				536533C520295F5600F3870F /* MessageCell.swift in Sources */,
+				53047943202172E8002E6467 /* TableViewCell.swift in Sources */,
+				5304792B20201335002E6467 /* LoginSignUpViewController.swift in Sources */,
+				536533C32029484A00F3870F /* MessageThreadController.swift in Sources */,
+				536533F3202BF27800F3870F /* CustomNavController.swift in Sources */,
+				5304794120217086002E6467 /* NewPostViewController.swift in Sources */,
+				5304793F20215B15002E6467 /* PostsTableViewController.swift in Sources */,
 				5304792920201335002E6467 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -272,13 +489,14 @@
 		};
 		5304793820201335002E6467 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AE55EFAB4FD3CDBBD6EA8041 /* Pods-Ertebat.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = XBLR45KT57;
+				DEVELOPMENT_TEAM = 44TB52J3GG;
 				INFOPLIST_FILE = Ertebat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.e.faridc.Ertebat;
+				PRODUCT_BUNDLE_IDENTIFIER = com.e.faridcrahmani.Ertebat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -287,13 +505,14 @@
 		};
 		5304793920201335002E6467 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2B59EE98E5AED03266CE6D9B /* Pods-Ertebat.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = XBLR45KT57;
+				DEVELOPMENT_TEAM = 44TB52J3GG;
 				INFOPLIST_FILE = Ertebat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.e.faridc.Ertebat;
+				PRODUCT_BUNDLE_IDENTIFIER = com.e.faridcrahmani.Ertebat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
