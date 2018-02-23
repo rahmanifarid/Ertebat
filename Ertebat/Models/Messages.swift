@@ -10,15 +10,16 @@ import Foundation
 import Firebase
 
 class Messages {
-    typealias MessageListener = ([MessageData])->()
-    private var messageListeners = [MessageListener]()
+    typealias MessageListener = (MessageData)->()
+    typealias AllMessageDataListener = ([MessageData])->() //Listeners who has requested all messages for all users
+    private var allMessageListeners = [AllMessageDataListener]()
     static let shared = Messages()
     private var latestMessage:Message?
     private var messages = [String : [Message]]()
     private var messageData = [MessageData]()
     private var users = [String: User]()
-    private var listenersForOneKey = NSMapTable<AnyObject, AnyObject>(keyOptions: NSPointerFunctions.Options.strongMemory, valueOptions: NSPointerFunctions.Options.weakMemory)
-    private var listenersForAllKeys = [MessageReceiver?]()
+    private var listenersForKeys = [String : MessageListener]()
+    
     
     
     private init(){
@@ -26,10 +27,8 @@ class Messages {
         createObserver()
     }
     
-    func add(Listener listener:MessageReceiver, forKey key: String) {
-        listenersForOneKey.setObject(listener, forKey: NSString(string: key))
-        callListenersForKey(key)
-    }
+    
+    
     
     func initialize() {
         print("Messages Manager Initialized")
@@ -37,7 +36,6 @@ class Messages {
     
     private func createObserver(){
         guard let userId = Auth.auth().currentUser?.uid else {
-            
             return
         }
         
@@ -52,31 +50,57 @@ class Messages {
             }
         }
     }
-    
+    var messagesDownloaded = false
     func downLoadMessages(newer:Bool = false) {
         guard let userId = Auth.auth().currentUser?.uid else {
             
             return
         }
-        let query = Firestore.firestore().collection("users").document(userId).collection("messages").order(by: "date", descending: true)
+        var query:Query
+        
         if newer, let newestMessage = latestMessage {
-            
-            query.whereField("date", isGreaterThan: newestMessage.date!)
+            print("Query for newer messages added")
+            query = Firestore.firestore().collection("users").document(userId).collection("messages").whereField("date", isGreaterThan: newestMessage.date!).order(by: "date", descending: false)
+            //query.whereField("text", isEqualTo: "kos wa kawn")
+        }else{
+            query = Firestore.firestore().collection("users").document(userId).collection("messages").order(by: "date", descending: false)
         }
+        
         query.getDocuments { (qsshot, err) in
+            print("Updated messages requested")
             if let error = err {
                 print(error.localizedDescription)
                 
             }
             
             if let snapshot = qsshot{
-                self.messages.removeAll()
-                print("New message arraived")
+                
+                //save the newest message so next time only newer than this message will be downloaded
+                if let newest = snapshot.documents.last{
+                    let data = newest.data()
+                    let message = Message.initWithData(data)
+                    self.latestMessage = message
+                }
+                
+               self.messagesDownloaded = true
+                if newer{
+                    print("Newer messages downloaded")
+                }else{
+                    print("All messages downloaded")
+                }
                 guard let userId = Auth.auth().currentUser?.uid else{
                     return
                 }
                 
+                
+                
+                print("Number of messages downloaded \(snapshot.documents.count)")
+                if snapshot.documents.count == 0{
+                    return
+                }
+                
                 for doc in snapshot.documents{
+                    
                     let data = doc.data()
                     let message = Message.initWithData(data)
                     let key = message.senderId == userId ? message.receiverId! : message.senderId!
@@ -84,29 +108,46 @@ class Messages {
                     msgArray.append(message)
                     self.messages[key] = msgArray
                     
+                    
                 }
                 
-                for (userId, messageArray) in self.messages{
-                    Firestore.firestore().collection("users").document(userId).getDocument(completion: { (sshot, err) in
-                        if let error = err{
-                            print(error.localizedDescription)
-                        }
-                        if let snapshot = sshot{
-                            let data = snapshot.data()
-                            let user = User.createWith(data: data!)
-                            let messageData = MessageData(user: user, messages: messageArray)
-                            self.messageData.append(messageData)
-                            self.callListenersForKey(userId)
+                
+                for (id, _) in self.messages{
+                    if self.users[id] == nil{
+                        print("Request for user info sent")
+                        Firestore.firestore().collection("users").document(id).getDocument(completion: { (sshot, err) in
+                            if let error = err{
+                                print(error.localizedDescription)
+                            }
+                            if let snapshot = sshot{
+                                let data = snapshot.data()
+                                let user = User.createWith(data: data!)
+                                
+                                
+                                self.users[id] = user
+                                self.callListenersForKey(id)
+                                //Check if all user data is downloaded
+                                if self.users.keys.count == self.messages.keys.count{
+                                    //This means all users are downloaded so
+                                    print("All users downloaded")
+                                    self.invokeMessageListeners()
+                                }
+                            }
                             
-                        }
-                        
-                        //Check if all user data is downloaded
-                        if self.messageData.count == self.messages.keys.count{
+                            
+                        })
+                    }else{
+                        self.callListenersForKey(id)
+                        if self.users.keys.count == self.messages.keys.count{
                             //This means all users are downloaded so
+                            print("User Downloaded Already")
                             self.invokeMessageListeners()
                         }
-                    })
+                    }
+                    
                 }
+                
+                
                 
                 
             }
@@ -114,16 +155,25 @@ class Messages {
     }
     
     func invokeMessageListeners() {
-        for messageListener in messageListeners{
-            messageListener(messageData)
+        
+        for messageListener in allMessageListeners{
+            print("message Listeners invoked")
+            var messageDataArray = [MessageData]()
+            for (id, user) in users{
+                let message = messages[id]
+                let messageData = MessageData(user: user, messages: message!)
+                messageDataArray.append(messageData)
+            }
+            messageListener(messageDataArray)
         }
     }
     
     func callListenersForKey(_ key:String) {
-        if let listener = self.listenersForOneKey.object(forKey: NSString(string:key)) as? MessageReceiver, let user = users[key], let msgArray = self.messages[key]{
+        print("Messages.callListenersForKey called")
+        if let listener = self.listenersForKeys[key], let user = users[key], let msgArray = self.messages[key]{
             
             let messageData = MessageData(user: user, messages: msgArray)
-            listener.didReceiveMessages([messageData])
+            listener(messageData)
         }
     }
     
@@ -137,10 +187,23 @@ class Messages {
         return result
     }
     
-    func addMessageListener(messageListener: @escaping MessageListener) {
-        self.messageListeners.append(messageListener)
+    func addMessageListener(messageListener: @escaping AllMessageDataListener) {
+        self.allMessageListeners.append(messageListener)
+        if messagesDownloaded{
+           invokeMessageListeners()
+        }
+        
     }
     
+    func addMessageListenerForKey(key:String, messageListener: @escaping MessageListener) {
+        self.listenersForKeys[key] = messageListener
+        
+    }
+    
+    func removeMessageListenerForKey(key:String) {
+        self.listenersForKeys.removeValue(forKey: key)
+        
+    }
     
     
     

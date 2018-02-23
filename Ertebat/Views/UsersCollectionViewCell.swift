@@ -20,4 +20,10 @@ class UsersCollectionViewCell: UICollectionViewCell {
         imageView.image = UIImage(named:"placeholder-profile")
         
     }
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = imageView.frame.size.width / 2
+    }
 }

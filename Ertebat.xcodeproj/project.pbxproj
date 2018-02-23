@@ -24,6 +24,8 @@
 		5328D682202E28650039B65A /* ChatsCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5328D681202E28650039B65A /* ChatsCollectionViewController.swift */; };
 		5328D684202E2BF20039B65A /* AllDataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5328D683202E2BF20039B65A /* AllDataModels.swift */; };
 		5328D686202E8AA60039B65A /* ChatsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5328D685202E8AA60039B65A /* ChatsCollectionViewCell.swift */; };
+		5328D68820338B500039B65A /* PostsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5328D68720338B500039B65A /* PostsViewController.swift */; };
+		5328D68A203392180039B65A /* TextPostCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5328D689203392180039B65A /* TextPostCollectionViewCell.swift */; };
 		536533C120244DA800F3870F /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533C020244DA800F3870F /* ProfileViewController.swift */; };
 		536533C32029484A00F3870F /* MessageThreadController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533C22029484A00F3870F /* MessageThreadController.swift */; };
 		536533C520295F5600F3870F /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533C420295F5600F3870F /* MessageCell.swift */; };
@@ -35,7 +37,6 @@
 		536533F3202BF27800F3870F /* CustomNavController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533F2202BF27800F3870F /* CustomNavController.swift */; };
 		536533F5202CDB4900F3870F /* BarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533F4202CDB4900F3870F /* BarView.swift */; };
 		536533F7202D078500F3870F /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533F6202D078500F3870F /* CustomTabBar.swift */; };
-		536533FB202D085000F3870F /* TabBarSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533FA202D085000F3870F /* TabBarSegue.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +59,8 @@
 		5328D681202E28650039B65A /* ChatsCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsCollectionViewController.swift; sourceTree = "<group>"; };
 		5328D683202E2BF20039B65A /* AllDataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllDataModels.swift; sourceTree = "<group>"; };
 		5328D685202E8AA60039B65A /* ChatsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsCollectionViewCell.swift; sourceTree = "<group>"; };
+		5328D68720338B500039B65A /* PostsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostsViewController.swift; sourceTree = "<group>"; };
+		5328D689203392180039B65A /* TextPostCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextPostCollectionViewCell.swift; sourceTree = "<group>"; };
 		536533C020244DA800F3870F /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		536533C22029484A00F3870F /* MessageThreadController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageThreadController.swift; sourceTree = "<group>"; };
 		536533C420295F5600F3870F /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
@@ -69,7 +72,6 @@
 		536533F2202BF27800F3870F /* CustomNavController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavController.swift; sourceTree = "<group>"; };
 		536533F4202CDB4900F3870F /* BarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarView.swift; sourceTree = "<group>"; };
 		536533F6202D078500F3870F /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
-		536533FA202D085000F3870F /* TabBarSegue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarSegue.swift; sourceTree = "<group>"; };
 		6F62697F6853B221EE336187 /* Pods_Ertebat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Ertebat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE55EFAB4FD3CDBBD6EA8041 /* Pods-Ertebat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ertebat.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Ertebat/Pods-Ertebat.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -134,8 +136,8 @@
 				536533C22029484A00F3870F /* MessageThreadController.swift */,
 				536533F2202BF27800F3870F /* CustomNavController.swift */,
 				536533F6202D078500F3870F /* CustomTabBar.swift */,
-				536533FA202D085000F3870F /* TabBarSegue.swift */,
 				5328D681202E28650039B65A /* ChatsCollectionViewController.swift */,
+				5328D68720338B500039B65A /* PostsViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -151,6 +153,7 @@
 				536533F0202AA54200F3870F /* CustomNavigationBar.swift */,
 				536533F4202CDB4900F3870F /* BarView.swift */,
 				5328D685202E8AA60039B65A /* ChatsCollectionViewCell.swift */,
+				5328D689203392180039B65A /* TextPostCollectionViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -334,12 +337,13 @@
 			files = (
 				536533F5202CDB4900F3870F /* BarView.swift in Sources */,
 				536533EF202A3CAB00F3870F /* Protocols.swift in Sources */,
+				5328D68A203392180039B65A /* TextPostCollectionViewCell.swift in Sources */,
 				536533F7202D078500F3870F /* CustomTabBar.swift in Sources */,
 				530479482022D388002E6467 /* SelectAName.swift in Sources */,
 				5304794D20242ADA002E6467 /* UsersCollectionViewCell.swift in Sources */,
-				536533FB202D085000F3870F /* TabBarSegue.swift in Sources */,
 				536533E8202983AB00F3870F /* MessageWritingView.swift in Sources */,
 				536533F1202AA54300F3870F /* CustomNavigationBar.swift in Sources */,
+				5328D68820338B500039B65A /* PostsViewController.swift in Sources */,
 				5328D682202E28650039B65A /* ChatsCollectionViewController.swift in Sources */,
 				536533ED202A2AA600F3870F /* Messages.swift in Sources */,
 				536533C120244DA800F3870F /* ProfileViewController.swift in Sources */,

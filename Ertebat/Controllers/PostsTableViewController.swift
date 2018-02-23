@@ -16,8 +16,8 @@ class PostsTableViewController: UITableViewController {
         super.viewDidLoad()
         
         //create the barView
-        let barView = BarView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: 44))
-        
+        let addPostBarItem = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(addNewPostPress(_:)))
+        toolbarItems?.append(addPostBarItem)
         //load posts
         loadPosts(newerOnly: false)
 //
@@ -28,6 +28,18 @@ class PostsTableViewController: UITableViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
         
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.isToolbarHidden = false
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.isToolbarHidden = true
+    }
+    
+    @objc func addNewPostPress(_ sender:UIBarButtonItem){
+        performSegue(withIdentifier: "addNewPost", sender: self)
     }
     
     func loadPosts(newerOnly: Bool) {
@@ -153,7 +165,7 @@ class PostsTableViewController: UITableViewController {
         cell.name.text = author?.name
         // Configure the cell...
         let profileUrl = URL.init(string: author!.profileUrl!)
-        print(profileUrl)
+        
         cell.profilePictureView.sd_setImage(with: profileUrl) { (img, err, cache, url) in
             if err == nil{
                 print("Image downloaded successfulment")

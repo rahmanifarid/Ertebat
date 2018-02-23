@@ -40,20 +40,17 @@ class BarView: UIView {
         
         let iconViewsCount = iconViews.count
         let screenHalf = scrollView.frame.size.width / 2
-        scrollView.contentSize.width = screenHalf + screenHalf * CGFloat(iconViewsCount) - iconView.frame.size.width / 2 - 5
-        if iconViewsCount == 1{
-            
-            iconView.center = CGPoint(x:screenHalf, y:scrollView.center.y)
-            scrollView.contentOffset = CGPoint(x: scrollView.center.x - iconView.frame.size.width / 2 - 5, y: scrollView.contentOffset.y)
+        let interItemDistance = screenHalf - iconViewWidth / 2 - 5
+        iconViews.first?.center.x = screenHalf
+        for i in 1..<iconViews.count{
+            iconViews[i].center.x = interItemDistance * CGFloat(i) + screenHalf
+        }
+        
+        if iconViews.count == 1{
+           scrollView.contentSize.width = 2 * screenHalf
         }else{
-            let firstCenterx = iconViews.first!.center.x
-            let d = iconViewWidth / 2 - 5
-            for i in 1..<iconViews.count{
-                iconViews[i].center.x = CGFloat(i) * screenHalf + firstCenterx - d
-            }
-            
-            scrollView.contentOffset = CGPoint(x: scrollView.center.x - iconView.frame.size.width / 2 - 5, y: scrollView.contentOffset.y)
-            
+            scrollView.contentSize.width = screenHalf + interItemDistance * CGFloat(iconViewsCount) + iconViewWidth / 2 + 5
+            scrollView.contentOffset = CGPoint(x: scrollView.center.x - iconViewWidth / 2 - 5, y: scrollView.contentOffset.y)
         }
         
         
@@ -105,8 +102,9 @@ class BarView: UIView {
     
     @objc func iconTapped(_ sender:UITapGestureRecognizer){
         let iconCenter = CGPoint(x: sender.view?.center.x ?? 0, y: sender.view?.center.y ?? 0)
-        print(iconCenter)
-        print("Scroll center \(scrollView.center)")
+        if (scrollView.center.x - iconCenter.x + scrollView.contentOffset.x) == 0{
+            return
+        }
         let direction = (scrollView.center.x - iconCenter.x + scrollView.contentOffset.x) < 0 ? ScrollDirection.right : ScrollDirection.left
         var newContentOffset = scrollView.contentOffset
         if direction == .right{
@@ -134,7 +132,7 @@ class BarView: UIView {
         let size = CGSize(width: UIScreen.main.bounds.size.width, height: frame.size.height)
         scrollView = UIScrollView(frame: CGRect(origin: CGPoint(x:0, y:0), size: size))
         scrollView.contentSize = CGSize(width: size.width, height: size.height)
-        scrollView.backgroundColor = UIColor.yellow
+        scrollView.backgroundColor = UIColor.clear
 //        label = UILabel()
 //        label.frame = CGRect(x: 0, y: 0, width: 200, height: 50)
 //        label.text = "Some custom text"
@@ -144,7 +142,9 @@ class BarView: UIView {
 //        scrollView.addSubview(label)
         scrollView.delegate = self
         //scrollView.backgroundColor = UIColor.yellow
-        
+//        let bottomLine = UIView(frame: CGRect(x: 0, y: bounds.size.height - 1, width: UIScreen.main.bounds.size.width, height: 1))
+//        bottomLine.backgroundColor = UIColor.lightGray
+//        addSubview(bottomLine)
         addSubview(scrollView)
         //bringSubview(toFront: scrollView)
     }
@@ -161,7 +161,7 @@ class BarView: UIView {
 
 extension BarView:UIScrollViewDelegate{
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let center = scrollView.center
+        
 //        for view in titleViews{
 //            let calculatedX = view.center.x - scrollView.contentOffset.x
 //            let d = fabs(center.x - calculatedX)
@@ -171,12 +171,13 @@ extension BarView:UIScrollViewDelegate{
 //            view.transform = transform
 //        }
         
+        
         for view in iconViews{
             let calculatedX = view.center.x - scrollView.contentOffset.x
             let d = fabs(center.x - calculatedX)
             //let alpha = d / center.x
-            let scale = 1.1 - d / center.x
-            //view.alpha = alpha
+            let scale = 1 - d / center.x
+            view.tintColor = UIColor(hue: 224 / 360, saturation: alpha, brightness: 0.73, alpha: 1.0)
             let transform = CGAffineTransform(scaleX: max(scale, 0.8), y: max(scale, 0.8))
             view.transform = transform
         }

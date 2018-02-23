@@ -35,6 +35,13 @@ class ProfileViewController: UIViewController {
         nameLabel.text = name
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        navigationController?.isNavigationBarHidden = false
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        navigationController?.isNavigationBarHidden = true
+    }
+    
 //    override func awakeFromNib() {
 //        super.awakeFromNib()
 //        imageView.image = image

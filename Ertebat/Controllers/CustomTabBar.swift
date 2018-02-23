@@ -23,7 +23,7 @@ class CustomTabBar: UIViewController {
         bottomScrollView.delegate = self
         bottomScrollView.frame = view.bounds
         bottomScrollView.frame.origin.y = navBarHeight + 20
-        bottomScrollView.frame.size.height -= navBarHeight
+        bottomScrollView.frame.size.height -= navBarHeight + 20
         bottomScrollView.contentSize = CGSize(width: CGFloat(tabs.count) * UIScreen.main.bounds.size.width, height: bottomScrollView.bounds.size.height - navBarHeight)
         bottomScrollView.isPagingEnabled = true
         bottomScrollView.isDirectionalLockEnabled = true
@@ -32,7 +32,20 @@ class CustomTabBar: UIViewController {
         view.addSubview(bottomScrollView)
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let posts = storyboard.instantiateViewController(withIdentifier: "posts")
+        
+        
+        
+        
+        let users = storyboard.instantiateViewController(withIdentifier: "users")
+        let uIconView = UIImageView()
+        uIconView.image = #imageLiteral(resourceName: "peopleIcon")
+        uIconView.contentMode = .scaleAspectFill
+        uIconView.clipsToBounds = true
+        uIconView.frame.size = CGSize(width: 50, height: 50)
+        customNavBar.addItem(iconView: uIconView)
+        add(Tab: users)
+        
+        let posts = storyboard.instantiateViewController(withIdentifier: "postsViewController")
         add(Tab: posts)
         let pIconView = UIImageView()
         pIconView.image = #imageLiteral(resourceName: "globeIcon")
@@ -42,6 +55,7 @@ class CustomTabBar: UIViewController {
         customNavBar.addItem(iconView: pIconView)
         
         let chats = storyboard.instantiateViewController(withIdentifier: "chats")
+        
         add(Tab: chats)
         let chatIconView = UIImageView()
         chatIconView.image = #imageLiteral(resourceName: "speechBubble")
@@ -50,15 +64,7 @@ class CustomTabBar: UIViewController {
         chatIconView.frame.size = CGSize(width: 50, height: 50)
         customNavBar.addItem(iconView: chatIconView)
         
-        let users = storyboard.instantiateViewController(withIdentifier: "users")
-        let uIconView = UIImageView()
-        uIconView.image = #imageLiteral(resourceName: "users")
-        uIconView.contentMode = .scaleAspectFill
-        uIconView.clipsToBounds = true
-        uIconView.frame.size = CGSize(width: 50, height: 50)
-        customNavBar.addItem(iconView: uIconView)
-        add(Tab: users)
-        
+        bottomScrollView.contentOffset.x = bottomScrollView.frame.width
         
         
         customNavBar.observeChange { (direction) in
@@ -97,7 +103,7 @@ class CustomTabBar: UIViewController {
         bottomScrollView.contentSize.width += screenWidth
         tab.view.frame = bottomScrollView.bounds
         tab.view.frame.origin.x = screenWidth * CGFloat(tabs.count - 1)
-        
+        tab.willMove(toParentViewController: self)
         bottomScrollView.addSubview(tab.view)
         tab.didMove(toParentViewController: self)
         

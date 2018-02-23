@@ -37,7 +37,7 @@ class UsersCollectionViewController: UICollectionViewController {
     
     
     func loadUsers() {
-        Firestore.firestore().collection("users").getDocuments { (sshot, err) in
+        Firestore.firestore().collection("users").addSnapshotListener { (sshot, err) in
             if let error = err{
                 let alert = UIAlertController.createAlert(title: "Error", message: error.localizedDescription)
                 self.present(alert, animated: true, completion: nil)
@@ -128,6 +128,7 @@ class UsersCollectionViewController: UICollectionViewController {
         profileVC.image = clickedImage
         profileVC.name = users[indexPath.row].name
         self.navigationController?.pushViewController(profileVC, animated: true)
+        
 //        self.performSegue(withIdentifier: "showProfile", sender: nil)
 //        print("Item frame \(clickedCellFrame)")
     }
@@ -168,8 +169,9 @@ extension UsersCollectionViewController: UINavigationControllerDelegate{
         
         let fromVCType = type(of: fromVC)
         let toVCType = type(of: toVC)
-        let condition = fromVCType == ProfileViewController.self && toVCType == MessageThreadController.self || toVCType == ProfileViewController.self && fromVCType == MessageThreadController.self
-        if condition{
+        print("From \(fromVCType) to \(toVCType)")
+        let condition = (fromVCType == CustomTabBar.self && toVCType == ProfileViewController.self) || (toVCType == CustomTabBar.self && fromVCType == ProfileViewController.self)
+        if condition == false{
             return nil
         }
         let animationController = AnimationController()

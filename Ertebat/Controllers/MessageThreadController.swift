@@ -8,40 +8,135 @@
 
 import UIKit
 import Firebase
-private let reuseIdentifier = "Cell"
+import QuartzCore
+import AVFoundation
+
+private let outgoingTextReuseIdentifier = "outgoingText"
+private let incomingTextReuseIdentifier = "incomingText"
 private let messageTypePicture = "picture"
 private let messageTypeText = "text"
+
 class MessageThreadController: UIViewController {
-    var user:User!
-    lazy var messagesData:MessageData = MessageData(user: user, messages: [Message]())
-   
     
+    var messages = [Message]()
+    var thread:Thread?
+    var user:User?
+    
+    @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var messageTextView: UITextView!
     @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var newMessageViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var collectionView: UICollectionView!
     
-    @IBAction func sendButtonPress(_ sender: Any) {
-        var message = Message(type: messageTypeText, senderId: Auth.auth().currentUser?.uid, receiverId: user.id, text: messageTextView.text, pictureUrl: nil, date: Date())
-        self.messagesData.messages.append(message)
-        let rowNumber = messagesData.messages.count - 1
+    var rowCalculatedSizes = [IndexPath : CGSize]() //Row sizes that are already calculated
+    @IBAction func sendButtonPress(_ sender: UIButton) {
+        let messageText = messageTextView.text.trimmingCharacters(in: CharacterSet(charactersIn: "\n \t\r"))
+        if messageText == ""{
+            return
+        }
+        sender.isEnabled = false
+        let message = Message(type:messageTypeText, senderId: Auth.auth().currentUser?.uid, receiverId: user?.id, text: messageText, pictureUrl: nil)
+        
+        if errorRetrievingThreadInfo{
+            //Try one more time to retrieve thread info
+            let threadId = constructThreadId()
+            
+            let listenerBlock = {(ss:DocumentSnapshot?, err:Error?) in
+                if let error = err{
+                    print(error.localizedDescription)
+                    self.errorRetrievingThreadInfo = true
+                    let alert = UIAlertController(title: "Error Sending Message", message: error.localizedDescription, preferredStyle: .alert)
+                    let alertAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                    alert.addAction(alertAction)
+                    self.present(alert, animated: true, completion: nil)
+                    sender.isEnabled = true
+                }
+                
+                if let snapshot = ss{
+                    if let data = snapshot.data(){
+                        let thread = Thread.initWith(data: data)
+                        self.thread = thread
+                        self.observeThread(id: thread.id)
+                    }
+                    self.send(message: message)
+                }
+            }
+            Firestore.firestore().collection("threads").document(threadId).getDocument(completion:listenerBlock)
+        }else{
+            send(message: message)
+        }
+        
+        
+        
+    }
+    
+    func send(message:Message) {
+        
+        if thread != nil {
+            sendMessage(message, thread: thread!)
+            
+        }else{
+            //Create the thread first
+            let threadId = constructThreadId()
+            let currentUserId = Auth.auth().currentUser!.uid
+            let threadUsers = [user!.id!, currentUserId]
+            let threadData:[String:Any] = ["id": threadId, "creationDate": Date(), "users" : threadUsers]
+            let threadRef = Firestore.firestore().collection("threads").document(threadId)
+            threadRef.setData(threadData, completion: { (err) in
+                if let error = err{
+                    let alert = UIAlertController.createAlert(title: "Error", message: error.localizedDescription)
+                    self.present(alert, animated: true, completion: nil)
+                    self.sendButton.isEnabled = true
+                    return
+                }
+                
+                self.thread = Thread(id: threadId, lastMessage: nil, users: threadUsers)
+                self.sendMessage(message, thread: self.thread!)
+                self.observeThread(id: self.thread!.id)
+                
+            })
+            //Add this thread to both users thread collection
+            let u1 = Firestore.firestore().collection("users").document(currentUserId).collection("threads").document(threadId)
+            u1.setData(threadData)
+            let u2 = Firestore.firestore().collection("users").document(user!.id!).collection("threads").document(threadId)
+            u2.setData(threadData)
+        }
+       
+    }
+    
+    func sendMessage(_ message:Message, thread:Thread) {
+        self.messages.append(message)
+        //lastMessageSent = message
+        let rowNumber = messages.count - 1
         let indexPath = IndexPath(row: rowNumber, section: 0)
         collectionView.insertItems(at: [indexPath])
         messageTextView.text = ""
-        Firestore.firestore().collection("users").document(user.id!).collection("messages").addDocument(data: message.data()) { (err) in
+        sendButton.isEnabled = true
+        receivedMessageIds.append(message.id!)
+        let threadId = thread.id
+        let doc = Firestore.firestore().collection("threads").document(threadId).collection("messages").document(message.id!)
+        doc.setData(message.data()) { (err) in
             if let error = err{
                 print(error.localizedDescription)
             }else{
-                message.text = message.text! + " Delivered"
-                self.messagesData.messages[indexPath.row] = message
-                self.collectionView.reloadItems(at: [indexPath])
+                //message.text = message.text! + " Delivered"
+                self.receivedMessageIds.append(message.id!)
+                self.messages[indexPath.row].text = self.messages[indexPath.row].text ?? "" + " Sent"
+                UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
+                    self.collectionView.reloadItems(at: [indexPath])
+                }, completion: nil)
+                
                 print("Message sent? maybe")
-            }
-            
-        }
-        Firestore.firestore().collection("users").document(Auth.auth().currentUser!.uid).collection("messages").addDocument(data: message.data()) { (err) in
-            if let error = err{
-                print(error.localizedDescription)
+                let doc = Firestore.firestore().collection("users").document(Auth.auth().currentUser!.uid).collection("messages").document(message.id!)
+                
+                doc.setData(message.data()) { (err) in
+                    if let error = err{
+                        print(error.localizedDescription)
+                    }
+                    
+                    
+                    
+                }
             }
             
         }
@@ -51,24 +146,191 @@ class MessageThreadController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.title = user.name
-        loadMessages()
+        navigationItem.title = user?.name
+//        for msg in messagesData.messages{
+//            receivedMessageIds.append(msg.id!)
+//        }
         
-        //Register for keyboard notifications
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardNotificationReceived(note:)), name: .UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardNotificationReceived(note:)), name: .UIKeyboardWillHide, object: nil)
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Register cell classes
-//        self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-
-        // Do any additional setup after loading the view.
+        loadThreadMessages()
+        registerForKeyboardNotifications()
+        
     }
     
-    func loadMessages(){
-        Messages.shared.add(Listener: self, forKey: user.id!)
+    
+    
+    func registerForKeyboardNotifications(){
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardNotificationReceived(note:)), name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardNotificationReceived(note:)), name: .UIKeyboardWillHide, object: nil)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.isNavigationBarHidden = false
         
+    }
+    
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+//        if messagesData.messages.count - 1 >= 0{
+//            let indexPath = IndexPath(item: messagesData.messages.count - 1, section: 0)
+//            collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
+//        }else{
+//            print("nope)")
+//        }
+    }
+    
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.isNavigationBarHidden = true
+        
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        observer?.remove()
+        user = nil
+        thread = nil
+        messages.removeAll()
+    }
+    
+    
+    var receivedMessageIds = [String]()
+    var errorRetrievingThreadInfo = false //This will be set to true if there were errors when getting thread info
+    
+    func loadThreadMessages(){
+        if thread != nil{
+            observeThread(id: thread!.id)
+        }else{
+            //If the thread is nil and the user is not, this means the MessageThreadController
+            //is launched from a ProfileViewController, so we query the database to see if there
+            //is a previous message exchange with this user.
+            retrieveThreadInfo()
+        }
+//        Messages.shared.addMessageListenerForKey(key: messagesData.user.id!) { (messageData) in
+//
+//            let messages = messageData.messages
+//            self.processMessagesAndAddToCollectionView(receivedMessages: messages)
+//            print("Load messages called")
+//        }
+    }
+    
+    func retrieveThreadInfo() {
+        
+        let threadId = constructThreadId()
+        
+        let listenerBlock = {(ss:DocumentSnapshot?, err:Error?) in
+            if let error = err{
+                print(error.localizedDescription)
+                self.errorRetrievingThreadInfo = true
+            }
+            
+            if let snapshot = ss{
+                if let data = snapshot.data(){
+                    let thread = Thread.initWith(data: data)
+                    self.thread = thread
+                    print("Thread is \(thread)")
+                    self.observeThread(id: thread.id)
+                }
+            }
+        }
+        Firestore.firestore().collection("threads").document(threadId).getDocument(completion:listenerBlock)
+        
+    }
+    
+    func constructThreadId() -> String {
+        let id1 = user!.id!
+        let id2 = Auth.auth().currentUser!.uid
+        
+        
+        
+        var threadId = ""
+        for i in 0..<14{
+            let index1 = id1.index(id1.startIndex, offsetBy: i)
+            let c1 = id1[index1]
+            
+            let index2 = id2.index(id2.startIndex, offsetBy: i)
+            let c2 = id2[index2]
+            if c1 < c2{
+                threadId += String(c1) + String(c2)
+            }else{
+                threadId += String(c2) + String(c1)
+            }
+        }
+        return threadId
+    }
+    
+    
+    var observer:ListenerRegistration?
+    
+    func observeThread(id:String) {
+        let query = Firestore.firestore().collection("threads").document(id).collection("messages").order(by: "date", descending: true).limit(to: 20)
+        
+        observer = query.addSnapshotListener { (sshot, err) in
+            if let error = err{
+                print(error.localizedDescription)
+            }
+            
+            if let snapshot = sshot{
+                var receivedMessages = [Message]()
+                for doc in snapshot.documents{
+                    let data = doc.data()
+                    let message = Message.initWithData(data)
+                    receivedMessages.append(message)
+                }
+                print("Following messages received:")
+                print(receivedMessages)
+                self.processMessagesAndAddToCollectionView(receivedMessages: receivedMessages)
+            }
+        }
+        
+        
+    }
+    
+    
+    func processMessagesAndAddToCollectionView(receivedMessages:[Message])  {
+        //filter out the last message that is sent by user from incoming messages because
+        //that is already added to the table view
+        var messages = receivedMessages.filter({ (message) -> Bool in
+            return !self.receivedMessageIds.contains(message.id!)
+        })
+        messages.sort()
+        var startNumberOfNewRows = self.messages.count
+        
+        self.messages += messages
+        var indexPaths = [IndexPath]()
+        for _ in messages{
+            let indexPath = IndexPath(item: startNumberOfNewRows, section: 0)
+            indexPaths.append(indexPath)
+            startNumberOfNewRows += 1
+        }
+        
+        self.collectionView.insertItems(at: indexPaths)
+        if messages.count > 0{
+            //make noise
+            AudioServicesPlaySystemSound(1003)
+        }
+        for msg in messages{
+            self.receivedMessageIds.append(msg.id!)
+        }
+        if self.messages.count - 1 >= 0{
+            let indexPath = IndexPath(item: self.messages.count - 1, section: 0)
+            self.collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
+        }
+        
+        for var msg in messages{
+//            if msg.seen == false{
+//                print("UPdate called for \(msg)")
+//                msg.seen = true
+//                Firestore.firestore().collection("users").document(Auth.auth().currentUser!.uid).collection("messages").document(msg.id!).updateData(["seen": true]){(err) in
+//                    if let error = err{
+//                        print(error.localizedDescription)
+//                    }
+//                }
+//            }
+        }
     }
     
     @objc func keyboardNotificationReceived(note:Notification){
@@ -87,6 +349,7 @@ class MessageThreadController: UIViewController {
         
         UIView.animate(withDuration: duration) {
             self.bottomConstraint.constant += layoutConstant
+            self.collectionView.contentOffset.y += layoutConstant
             self.view.layoutIfNeeded()
         }
     }
@@ -152,42 +415,80 @@ extension MessageThreadController: UICollectionViewDelegate, UICollectionViewDat
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return messagesData.messages.count
+        return messages.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! MessageCell
-        let message = messagesData.messages[indexPath.row]
+        
+        let message = messages[indexPath.row]
+        let prevMessage = indexPath.row > 0 ? messages[indexPath.row - 1] : nil
+        let nextMessage = indexPath.row < (messages.count - 1) ? messages[indexPath.row + 1] : nil
+        var reuseId = ""
+        if message.senderId == Auth.auth().currentUser?.uid{
+            reuseId = outgoingTextReuseIdentifier
+        }else{
+            reuseId = incomingTextReuseIdentifier
+        }
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseId, for: indexPath) as! TextMessageCell
+        
         // Configure the cell
-        cell.textView.text = message.senderId! + " RecID: " + message.receiverId! + " \n" + message.text!
-        cell.backgroundColor = UIColor.gray
+        cell.textView.text = message.text!
+        cell.layoutIfNeeded()
+        if reuseId == outgoingTextReuseIdentifier{
+            
+            //cell.bubbleView.backgroundColor = UIColor(red: 0, green: 212 / 255, blue: 255 / 255, alpha: 1)
+            
+            cell.bubbleView.layer.cornerRadius = 15
+            var maskedCorners:CACornerMask = [CACornerMask.layerMinXMinYCorner, CACornerMask.layerMinXMaxYCorner]
+            if prevMessage?.senderId != Auth.auth().currentUser?.uid || nextMessage?.senderId != Auth.auth().currentUser?.uid{
+                
+                maskedCorners.formUnion(.layerMaxXMaxYCorner)
+            }
+//            if nextMessage?.senderId != Auth.auth().currentUser?.uid{
+//
+//                maskedCorners.formUnion(.layerMaxXMaxYCorner)
+//            }
+            
+            cell.bubbleView.layer.maskedCorners = maskedCorners
+        }else if reuseId == incomingTextReuseIdentifier{
+            cell.bubbleView.layer.cornerRadius = 15
+            var maskedCorners:CACornerMask = [CACornerMask.layerMaxXMinYCorner, CACornerMask.layerMaxXMaxYCorner]
+            if prevMessage?.senderId != message.senderId || nextMessage?.senderId != message.senderId{
+                
+                maskedCorners.formUnion(.layerMinXMaxYCorner)
+            }
+//            if nextMessage?.senderId != message.senderId{
+//
+//                maskedCorners.formUnion(.layerMinXMaxYCorner)
+//            }
+            
+            cell.bubbleView.layer.maskedCorners = maskedCorners
+        }
+        
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = UIScreen.main.bounds.width - 40
+        if let calculatedSize = rowCalculatedSizes[indexPath]{
+            return calculatedSize
+        }
+        let width = (UIScreen.main.bounds.width) / 2 + 64
         let textView = UITextView()
-        let message = self.messagesData.messages[indexPath.row]
-        textView.text = message.senderId! + " RecID: " + message.receiverId! + " \n" + message.text!
+        let message = self.messages[indexPath.row]
+        textView.text = message.text!
+        textView.font = UIFont.preferredFont(forTextStyle: .body)
         var size = textView.sizeThatFits(CGSize(width: width, height: CGFloat.infinity))
-        size.width = width
-        size.height = size.height + 10
-        print(size)
+        size.width = UIScreen.main.bounds.size.width - 20
+        
+        rowCalculatedSizes[indexPath] = size
         return size
     }
     
     
+    
+    
 }
 
-extension MessageThreadController:MessageReceiver{
-    func didReceiveMessages(_ messageData: [MessageData]) {
-        guard let first = messageData.first else {
-            return
-        }
-        self.messagesData = first
-        print("MessageData Received I think")
-        collectionView.reloadData()
-    }
-}
+
 
 

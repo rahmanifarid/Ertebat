@@ -12,3 +12,9 @@ class MessageCell: UICollectionViewCell {
     @IBOutlet weak var textView: UITextView!
     
 }
+
+class TextMessageCell: MessageCell {
+    @IBOutlet weak var bubbleView:UIView!
+}
+
+
