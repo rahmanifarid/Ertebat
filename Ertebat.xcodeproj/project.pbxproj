@@ -37,6 +37,8 @@
 		536533F3202BF27800F3870F /* CustomNavController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533F2202BF27800F3870F /* CustomNavController.swift */; };
 		536533F5202CDB4900F3870F /* BarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533F4202CDB4900F3870F /* BarView.swift */; };
 		536533F7202D078500F3870F /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536533F6202D078500F3870F /* CustomTabBar.swift */; };
+		53818D1120412B5700E0722C /* SelfProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53818D1020412B5700E0722C /* SelfProfileViewController.swift */; };
+		53818D1320412B7200E0722C /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53818D1220412B7200E0722C /* EditProfileViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -72,6 +74,8 @@
 		536533F2202BF27800F3870F /* CustomNavController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavController.swift; sourceTree = "<group>"; };
 		536533F4202CDB4900F3870F /* BarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarView.swift; sourceTree = "<group>"; };
 		536533F6202D078500F3870F /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
+		53818D1020412B5700E0722C /* SelfProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfProfileViewController.swift; sourceTree = "<group>"; };
+		53818D1220412B7200E0722C /* EditProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
 		6F62697F6853B221EE336187 /* Pods_Ertebat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Ertebat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE55EFAB4FD3CDBBD6EA8041 /* Pods-Ertebat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ertebat.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Ertebat/Pods-Ertebat.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -138,6 +142,8 @@
 				536533F6202D078500F3870F /* CustomTabBar.swift */,
 				5328D681202E28650039B65A /* ChatsCollectionViewController.swift */,
 				5328D68720338B500039B65A /* PostsViewController.swift */,
+				53818D1020412B5700E0722C /* SelfProfileViewController.swift */,
+				53818D1220412B7200E0722C /* EditProfileViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -335,6 +341,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53818D1320412B7200E0722C /* EditProfileViewController.swift in Sources */,
 				536533F5202CDB4900F3870F /* BarView.swift in Sources */,
 				536533EF202A3CAB00F3870F /* Protocols.swift in Sources */,
 				5328D68A203392180039B65A /* TextPostCollectionViewCell.swift in Sources */,
@@ -356,6 +363,7 @@
 				5304792B20201335002E6467 /* LoginSignUpViewController.swift in Sources */,
 				536533C32029484A00F3870F /* MessageThreadController.swift in Sources */,
 				536533F3202BF27800F3870F /* CustomNavController.swift in Sources */,
+				53818D1120412B5700E0722C /* SelfProfileViewController.swift in Sources */,
 				5304794120217086002E6467 /* NewPostViewController.swift in Sources */,
 				5304793F20215B15002E6467 /* PostsTableViewController.swift in Sources */,
 				5304792920201335002E6467 /* AppDelegate.swift in Sources */,

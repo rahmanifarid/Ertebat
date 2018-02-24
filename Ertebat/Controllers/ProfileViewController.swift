@@ -13,8 +13,7 @@ class ProfileViewController: UIViewController {
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var imageView: UIImageView!
     var user: User!
-    var name:String!
-    var image:UIImage!
+    
     
     
     @IBAction func sendMessageButtonPress(_ sender: Any) {
@@ -31,15 +30,27 @@ class ProfileViewController: UIViewController {
         print("User is \(user)")
         // Do any additional setup after loading the view.
         //let url = URL(string:user.profileUrl!)
-        imageView.image = image
-        nameLabel.text = name
+        
     }
-    
+    var nameObservation:NSKeyValueObservation?
+    var imageObservation:NSKeyValueObservation?
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        imageView.image = user.profileImage
+        nameLabel.text = user.name
         navigationController?.isNavigationBarHidden = false
+        nameObservation = user.observe((\.name), changeHandler: { (user, change) in
+            self.nameLabel.text = user.name
+        })
+        imageObservation = user.observe((\.profileImage), changeHandler: { (user, change) in
+            self.imageView.image = user.profileImage
+        })
     }
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         navigationController?.isNavigationBarHidden = true
+        nameObservation?.invalidate()
+        imageObservation?.invalidate()
     }
     
 //    override func awakeFromNib() {

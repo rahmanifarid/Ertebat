@@ -15,7 +15,7 @@ enum PostType{
 }
 
 
-struct Post {
+@objcMembers class Post:NSObject {
     var postId:String?
     var type:PostType?
     var pictureUrl: String?
@@ -25,6 +25,9 @@ struct Post {
     var date:NSDate?
     var imageWidth:Int?
     var imageHeight:Int?
+    dynamic var imageDownloaded = false
+    dynamic var percentImageDownloaded:Float = 0
+    dynamic var image:UIImage?
     init(type:PostType? = PostType.text, date:NSDate?, authorId:String?, text:String?, pictureUrl:String?, videoUrl:String?, imageWidth:Int?, imageHeight:Int?) {
         self.type = type
         self.date = date
@@ -38,17 +41,117 @@ struct Post {
     
     static func createWith(data:[String: Any]) -> Post{
         let post = Post(type: data["type"] as? PostType, date: data["date"] as? NSDate, authorId: data["authorId"] as? String, text: data["text"] as? String, pictureUrl: data["pictureUrl"] as? String, videoUrl: data["videoUrl"] as? String, imageWidth:data["imageWidth"] as? Int, imageHeight:data["imageHeight"] as? Int)
+        post.downloadMedia()
         return post
+    }
+    var imageDownloadError = false
+    func downloadMedia() {
+        guard let imageUrlString = self.pictureUrl, let url = URL(string: imageUrlString) else{
+            return
+        }
+        
+        SDWebImageDownloader.shared().downloadImage(with: url, options: SDWebImageDownloaderOptions.continueInBackground, progress: { (downloaded, remaining, url) in
+            DispatchQueue.main.async {
+                self.percentImageDownloaded = Float(100 * downloaded / remaining)
+                print("\(100 * downloaded / remaining)")
+            }
+        }) { (img, data, err, completed) in
+            DispatchQueue.main.async {
+                if err != nil {
+                    self.imageDownloadError = true
+                    print("Error downloading profile image")
+                }
+                if let image = img{
+                    self.image = image
+                    self.imageDownloaded = true
+                    print("Completed profile download successfully")
+                }
+            }
+        }
+        
     }
 }
 
 
 
-struct User{
-    var name: String?
+@objcMembers class User:NSObject{
+    dynamic var name: String?
     var profileUrl: String?
     var id: String?
+    dynamic var profileImage:UIImage?
     
+    override func isEqual(_ object: Any?) -> Bool {
+        if let other = object as? User, other.id == self.id{
+            return true
+        }
+        return false
+    }
+    init(name:String?, profileUrl:String?, id:String?){
+        self.name = name
+        self.id = id
+        self.profileUrl = profileUrl
+        super.init()
+        
+    }
+    func startDownloadingData() {
+        downloadProfileImage()
+        startObservering()
+    }
+    
+    var alreadyObserving = false
+    var observer:ListenerRegistration?
+    func startObservering() {
+        if let userId = id, alreadyObserving == false{
+            alreadyObserving = true
+            observer = Firestore.firestore().collection("users").document(userId).addSnapshotListener({ (ss, err) in
+                if let error = err{
+                    print(error.localizedDescription)
+                }
+                
+                if let snapshot = ss{
+                    if let data = snapshot.data(){
+                        print("User info changed. Data: \(data)")
+                        self.name = data["name"] as? String
+                        if self.profileUrl != data["profileURL"] as? String{
+                            self.profileUrl = data["profileURL"] as? String
+                            self.downloadProfileImage()
+                        }
+                        
+                    }
+                    
+                }
+            })
+        }
+    }
+    var profileImageDownloadError = false
+    func downloadProfileImage(){
+        if profileUrl == nil{
+            return
+        }
+        let url = URL(string:profileUrl!)
+        SDWebImageDownloader.shared().downloadImage(with: url, options: SDWebImageDownloaderOptions.continueInBackground, progress: { (downloaded, remaining, url) in
+            DispatchQueue.main.async {
+//                self.profilePicPercent = Float(100 * downloaded / remaining)
+//                print("\(100 * downloaded / remaining)")
+            }
+        }) { (img, data, err, completed) in
+            DispatchQueue.main.async {
+                if err != nil {
+                    self.profileImageDownloadError = true
+                    print("Error downloading profile image")
+                }
+                if let image = img{
+                    self.profileImage = image
+                    print("Completed profile download successfully")
+                }
+            }
+        }
+    }
+    
+    func stopObserving(){
+        observer?.remove()
+        alreadyObserving = false
+    }
     static func createWith(data:[String : Any]) -> User{
         return User(name: data["name"] as? String, profileUrl: data["profileURL"] as? String, id: data["id"] as? String)
     }
@@ -147,7 +250,7 @@ import FirebaseStorageUI
 //        return lhs.thread.id == rhs.thread.id
 //    }
     override func isEqual(_ object: Any?) -> Bool {
-        print("Is equal called")
+      
         if let obj = object as? ChatsCellData, obj.thread.id == self.thread.id{
             return true
         }

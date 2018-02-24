@@ -44,15 +44,40 @@ class UsersCollectionViewController: UICollectionViewController {
             }
             
             if let snapShot = sshot{
+                var newUsers = [User]()
                 for doc in snapShot.documents{
                     let data = doc.data()
                     let user = User.createWith(data: data)
-                    self.users.append(user)
-                    
+                    if !self.users.contains(user){
+                        user.startDownloadingData()
+                        if user.id == Auth.auth().currentUser?.uid{
+                            newUsers.insert(user, at: 0)
+                        }else{
+                            newUsers.append(user)
+                        }
+                    }
+                }
+                if newUsers.count == 0{
+                    return
                 }
                 
                 
-                self.collectionView?.reloadData()
+                if self.users.count == 0 {
+                    self.users = newUsers
+                   self.collectionView?.reloadData()
+                    return
+                }
+                
+                var row = self.users.count
+                for user in newUsers{
+                    self.users.append(user)
+                    let indexPath = IndexPath(row: row, section: 0)
+                    self.collectionView?.insertItems(at: [indexPath])
+                    row += 1
+                }
+                
+                
+                
             }
         }
     }
@@ -70,8 +95,7 @@ class UsersCollectionViewController: UICollectionViewController {
         if segue.identifier == "showProfileVC"{
             let profileVC = segue.destination as! ProfileViewController
             profileVC.user = users[clickedIndexPath!.row]
-            profileVC.image = clickedImage
-            profileVC.name = users[clickedIndexPath!.row].name
+            
             
         }
         // Get the new view controller using [segue destinationViewController].
@@ -97,15 +121,7 @@ class UsersCollectionViewController: UICollectionViewController {
         
          //Configure the cell
         let user = users[indexPath.row]
-        let url = URL(string: user.profileUrl!)
-        if let url = url, cell.imageView != nil{
-            cell.imageView.sd_setImage(with: url, completed: nil)
-        }
-        if let label = cell.nameLabel{
-            label.text = user.name
-        }
-        
-        cell.userId = user.id!
+        cell.setData(user)
         
         return cell
     }
@@ -121,12 +137,11 @@ class UsersCollectionViewController: UICollectionViewController {
         clickedIndexPath = indexPath
         let clickedCell = collectionView.cellForItem(at: indexPath) as! UsersCollectionViewCell
         clickedImage = clickedCell.imageView.image
-
+        let user = users[indexPath.row]
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let profileVC = storyboard.instantiateViewController(withIdentifier: "profileVC")as! ProfileViewController
-        profileVC.user = users[indexPath.row]
-        profileVC.image = clickedImage
-        profileVC.name = users[indexPath.row].name
+        let identifier = user.id == Auth.auth().currentUser?.uid ? "selfProfileViewController" : "profileVC"
+        let profileVC = storyboard.instantiateViewController(withIdentifier: identifier)as! ProfileViewController
+        profileVC.user = user
         self.navigationController?.pushViewController(profileVC, animated: true)
         
 //        self.performSegue(withIdentifier: "showProfile", sender: nil)

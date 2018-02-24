@@ -67,7 +67,12 @@ class PostsViewController: UIViewController {
                 post["imageHeight"] = resizedImage.size.height
                 post["authorId"] = Auth.auth().currentUser?.uid
                 post["date"] = NSDate()
-                post["pictureUrl"] = filename
+                
+                var pictureUrl = ""
+                if snapshot.metadata != nil{
+                    pictureUrl = snapshot.metadata!.downloadURL()!.absoluteString
+                }
+                post["pictureUrl"] = pictureUrl
                 Firestore.firestore().collection("posts").addDocument(data: post)
             }
         }else if postText != nil{
@@ -93,20 +98,24 @@ class PostsViewController: UIViewController {
             let edgeInset = UIEdgeInsetsMake(10, leftEdge, 10, leftEdge)
             collectionView.contentInset = edgeInset
         }
-        loadPosts(newerOnly: false)
+        loadPosts()
         // Do any additional setup after loading the view.
     }
-    
-    func loadPosts(newerOnly: Bool) {
+    lazy var query:Query = {
         var query:Query
-        if newerOnly && posts.count > 0 {
+        if posts.count > 0 {
             let afterDate = posts.first!.date!
             query = Firestore.firestore().collection("posts").whereField("date", isGreaterThan: afterDate ).order(by: "date", descending: true).limit(to: 20)
         }else{
             query = Firestore.firestore().collection("posts").order(by: "date", descending: true).limit(to: 20)
         }
+        return query
+    }()
+    
+    func loadPosts() {
+        
        
-        query.getDocuments { (sshot, err) in
+        self.dbListener = query.addSnapshotListener { (sshot, err) in
             if let error = err{
                 print(error.localizedDescription)
                 return
@@ -114,6 +123,9 @@ class PostsViewController: UIViewController {
             
             if let snapShot = sshot{
                 print("Number of posts downloaded \(snapShot.documents.count)")
+                if snapShot.documents.count == 0{
+                    return
+                }
                 var authorIds = [String]()
                 var newPosts = [Post]()
                 
@@ -140,9 +152,11 @@ class PostsViewController: UIViewController {
                     }
                     self.collectionView.insertItems(at: indexPaths)
                 }
-                if self.dbListener == nil{
-                   self.createObserver()
-                }
+                
+                self.query = Firestore.firestore().collection("posts").order(by: "date", descending: true).end(beforeDocument: snapShot.documents.first!).limit(to: 20)
+                self.dbListener?.remove()
+                self.loadPosts()
+                
                 
 //                //Download author details
 //                if authorIds.count == 0{
@@ -202,7 +216,7 @@ class PostsViewController: UIViewController {
             }
             
             if ss != nil{
-                self.loadPosts(newerOnly: true)
+                self.loadPosts()
             }
             
         }
@@ -241,6 +255,13 @@ class PostsViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+        if self.posts.count > 20{
+            for i in 19..<posts.count{
+                self.posts.remove(at: i)
+            }
+            collectionView.reloadData()
+        }
+        
     }
     var clickedImageFrame = CGRect.zero
     var vxView:UIVisualEffectView = {
@@ -371,34 +392,34 @@ extension PostsViewController:UICollectionViewDataSource, UICollectionViewDelega
         print("Cell for row called")
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: textPostId, for: indexPath) as! TextPostCollectionViewCell
         let post = posts[indexPath.row]
-        let (labelSize, imageSize) = sizeFor(post: post)
-        print("Row \(indexPath.row)")
-        if let text = post.text{
-            
-            cell.textView.text = text
-//            let frame = CGRect(origin: CGPoint(x:10, y: 10), size: labelSize)
-//            cell.textView.frame = frame
-            cell.textView.isHidden = false
-        }else{
-            
-            cell.textView.isHidden = true
-            
-        }
-        
-        if let pictureName = post.pictureUrl {
-            let ref = Storage.storage().reference(withPath: "/images/\(pictureName)")
-            cell.imageView.sd_setImage(with: ref)
-//            var frame = CGRect.zero
-//            frame.size = imageSize
-//            if labelSize.height > 0{
-//                frame.origin.y = labelSize.height + 20
-//            }
-//            cell.imageView.frame = frame
-//            print("ImageView Frame \(frame)")
-            cell.imageView.isHidden = false
-        }else{
-            cell.imageView.isHidden = true
-        }
+        cell.setPostData(post)
+//        print("Row \(indexPath.row)")
+//        if let text = post.text{
+//
+//            cell.textView.text = text
+////            let frame = CGRect(origin: CGPoint(x:10, y: 10), size: labelSize)
+////            cell.textView.frame = frame
+//            cell.textView.isHidden = false
+//        }else{
+//
+//            cell.textView.isHidden = true
+//
+//        }
+//
+//        if let pictureName = post.pictureUrl {
+//            let ref = Storage.storage().reference(withPath: "/images/\(pictureName)")
+//            cell.imageView.sd_setImage(with: ref)
+////            var frame = CGRect.zero
+////            frame.size = imageSize
+////            if labelSize.height > 0{
+////                frame.origin.y = labelSize.height + 20
+////            }
+////            cell.imageView.frame = frame
+////            print("ImageView Frame \(frame)")
+//            cell.imageView.isHidden = false
+//        }else{
+//            cell.imageView.isHidden = true
+//        }
        cell.postsVC = self
         return cell
     }

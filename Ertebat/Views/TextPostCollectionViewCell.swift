@@ -47,8 +47,34 @@ class TextPostCollectionViewCell: UICollectionViewCell {
         print("Tapped")
         postsVC?.zoomImageView(sender.view as! UIImageView)
     }
+    var postData:Post?
+    var observation:NSKeyValueObservation?
+    func setPostData(_ post:Post) {
+        postData = post
+        textView.text = post.text
+        if postData?.imageDownloaded == true{
+            imageView.image = postData?.image
+        }else{
+            observation = postData?.observe((\.percentImageDownloaded), changeHandler: { (post, change) in
+                print("Percent Downloaded\(post.percentImageDownloaded)")
+                if post.percentImageDownloaded == 100{
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
+                        self.imageView.alpha = 0
+                        self.imageView.image = post.image
+                        UIView.animate(withDuration: 0.4, animations: {
+                            self.imageView.alpha = 1.0
+                        })
+                        
+                    })
+                    
+                }
+            })
+        }
+    }
     
     override func prepareForReuse() {
+        observation?.invalidate()
+        postData = nil
         textView.text = nil
         imageView.image = nil
         imageView.isHidden = false
