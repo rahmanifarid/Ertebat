@@ -12,6 +12,7 @@ import Firebase
 private let reuseIdentifier = "Cell"
 
 class UsersCollectionViewController: UICollectionViewController {
+    var barViewItem:BarViewItem?
     var users = [User]()
     var clickedCellFrame = CGRect.zero
     var clickedIndexPath:IndexPath? = nil

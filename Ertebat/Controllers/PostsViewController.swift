@@ -11,6 +11,7 @@ import Firebase
 
 let textPostId = "textPostCell"
 class PostsViewController: UIViewController {
+    var barViewItem:BarViewItem?
     var precalculatedPostSizes = [String:(CGSize, CGSize)]()
     @IBOutlet weak var collectionView: UICollectionView!
     

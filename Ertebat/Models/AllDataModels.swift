@@ -53,7 +53,7 @@ enum PostType{
         SDWebImageDownloader.shared().downloadImage(with: url, options: SDWebImageDownloaderOptions.continueInBackground, progress: { (downloaded, remaining, url) in
             DispatchQueue.main.async {
                 self.percentImageDownloaded = Float(100 * downloaded / remaining)
-                print("\(100 * downloaded / remaining)")
+                //print("\(100 * downloaded / remaining)")
             }
         }) { (img, data, err, completed) in
             DispatchQueue.main.async {
@@ -231,7 +231,9 @@ struct Thread{
     var users:[String]?
     
     static func initWith(data:[String:Any])-> Thread{
-        return Thread(id: data["id"] as! String, lastMessage: data["lastMessage"] as? Message, users: data["users"] as? [String])
+        let lastMessageData = (data["lastMessage"] as? [String:Any]) ?? [String:Any]()
+        let lastMessage = Message.initWithData(lastMessageData)
+        return Thread(id: data["id"] as! String, lastMessage: lastMessage, users: data["users"] as? [String])
     }
     
     func data() -> [String: Any] {
@@ -260,6 +262,7 @@ import FirebaseStorageUI
     var lastMessage:Message
     var thread:Thread
     var profilePic:UIImage?
+    dynamic var unseenMessages = 0
     dynamic var downloaded = false
     dynamic var profilePicPercent:Float = 0
     init(user: User, lastMessage:Message, thread:Thread) {
@@ -286,7 +289,7 @@ import FirebaseStorageUI
             }
         }
         
-        Firestore.firestore().collection("users").document(userId).getDocument(completion: { (ss, err) in
+        Firestore.firestore().collection("users").document(userId).addSnapshotListener({ (ss, err) in
             if let error = err{
                 print(error.localizedDescription)
             }
@@ -310,6 +313,21 @@ import FirebaseStorageUI
                             self.lastMessage = Message.initWithData(data)
                             self.downloaded = true
                         }
+                        Firestore.firestore().collection("threads").document(self.thread.id).collection("messages").whereField("senderId", isEqualTo:userId ).whereField("seen", isEqualTo:false).getDocuments(completion: { (ss, err) in
+                            if let error = err{
+                                print(error.localizedDescription)
+                            }
+                            if let snapshot = ss{
+                               
+                                if self.unseenMessages != snapshot.documents.count{
+                                   self.unseenMessages = snapshot.documents.count
+                                    var notification = Notification(name: Notification.Name(rawValue: "UnseenMessageNumberChange"))
+                                    notification.userInfo = ["threadId": self.thread.id, "unseenMessages": self.unseenMessages]
+                                    NotificationCenter.default.post(notification)
+                                }
+                                
+                            }
+                        })
                     })
                 }
                 
@@ -331,7 +349,7 @@ import FirebaseStorageUI
         SDWebImageDownloader.shared().downloadImage(with: url, options: SDWebImageDownloaderOptions.continueInBackground, progress: { (downloaded, remaining, url) in
             DispatchQueue.main.async {
                 self.profilePicPercent = Float(100 * downloaded / remaining)
-                print("\(100 * downloaded / remaining)")
+                //print("\(100 * downloaded / remaining)")
             }
         }) { (img, data, err, completed) in
             DispatchQueue.main.async {

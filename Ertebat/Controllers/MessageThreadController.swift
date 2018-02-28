@@ -80,7 +80,7 @@ class MessageThreadController: UIViewController {
             let threadId = constructThreadId()
             let currentUserId = Auth.auth().currentUser!.uid
             let threadUsers = [user!.id!, currentUserId]
-            let threadData:[String:Any] = ["id": threadId, "creationDate": Date(), "users" : threadUsers]
+            let threadData:[String:Any] = ["id": threadId, "creationDate": Date(), "users" : threadUsers, "lastMessage": message.data()]
             let threadRef = Firestore.firestore().collection("threads").document(threadId)
             threadRef.setData(threadData, completion: { (err) in
                 if let error = err{
@@ -127,16 +127,13 @@ class MessageThreadController: UIViewController {
                 }, completion: nil)
                 
                 print("Message sent? maybe")
-                let doc = Firestore.firestore().collection("users").document(Auth.auth().currentUser!.uid).collection("messages").document(message.id!)
+//                let doc = Firestore.firestore().collection("users").document(Auth.auth().currentUser!.uid).collection("messages").document(message.id!)
                 
-                doc.setData(message.data()) { (err) in
-                    if let error = err{
-                        print(error.localizedDescription)
-                    }
-                    
-                    
-                    
-                }
+//                doc.setData(message.data()) { (err) in
+//                    if let error = err{
+//                        print(error.localizedDescription)
+//                    }
+//                }
             }
             
         }
@@ -279,9 +276,9 @@ class MessageThreadController: UIViewController {
                     let data = doc.data()
                     let message = Message.initWithData(data)
                     receivedMessages.append(message)
+                    
                 }
-                print("Following messages received:")
-                print(receivedMessages)
+
                 self.processMessagesAndAddToCollectionView(receivedMessages: receivedMessages)
             }
         }
@@ -298,7 +295,10 @@ class MessageThreadController: UIViewController {
         })
         messages.sort()
         var startNumberOfNewRows = self.messages.count
-        
+        if messages.count > 0, self.messages.count != 0{
+            //make noise
+            AudioServicesPlaySystemSound(1003)
+        }
         self.messages += messages
         var indexPaths = [IndexPath]()
         for _ in messages{
@@ -308,10 +308,7 @@ class MessageThreadController: UIViewController {
         }
         
         self.collectionView.insertItems(at: indexPaths)
-        if messages.count > 0{
-            //make noise
-            AudioServicesPlaySystemSound(1003)
-        }
+        
         for msg in messages{
             self.receivedMessageIds.append(msg.id!)
         }
@@ -320,16 +317,19 @@ class MessageThreadController: UIViewController {
             self.collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
         }
         
+        
+        
         for var msg in messages{
-//            if msg.seen == false{
-//                print("UPdate called for \(msg)")
-//                msg.seen = true
-//                Firestore.firestore().collection("users").document(Auth.auth().currentUser!.uid).collection("messages").document(msg.id!).updateData(["seen": true]){(err) in
-//                    if let error = err{
-//                        print(error.localizedDescription)
-//                    }
-//                }
-//            }
+            if msg.seen == false && msg.senderId != Auth.auth().currentUser?.uid{
+                print("Updated message to seen:true \(msg)")
+                msg.seen = true
+                Firestore.firestore().collection("threads").document(thread!.id).collection("messages").document(msg.id!).updateData(["seen": true]){(err) in
+                    if let error = err{
+                        print("Error while updating message state to seen:true")
+                        print(error.localizedDescription)
+                    }
+                }
+            }
         }
     }
     

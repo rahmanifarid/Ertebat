@@ -36,37 +36,26 @@ class CustomTabBar: UIViewController {
         
         
         
-        let users = storyboard.instantiateViewController(withIdentifier: "users")
-        let uIconView = UIImageView()
-        uIconView.image = #imageLiteral(resourceName: "peopleIcon")
-        uIconView.contentMode = .scaleAspectFill
-        uIconView.clipsToBounds = true
-        uIconView.frame.size = CGSize(width: 50, height: 50)
+        let users = storyboard.instantiateViewController(withIdentifier: "users") as! UsersCollectionViewController
+        let uIconView = BarViewItem(image: #imageLiteral(resourceName: "peopleIcon"))
         customNavBar.addItem(iconView: uIconView)
+        users.barViewItem = uIconView
         add(Tab: users)
         
-        let posts = storyboard.instantiateViewController(withIdentifier: "postsViewController")
+        let posts = storyboard.instantiateViewController(withIdentifier: "postsViewController") as! PostsViewController
         add(Tab: posts)
-        let pIconView = UIImageView()
-        pIconView.image = #imageLiteral(resourceName: "globeIcon")
-        pIconView.contentMode = .scaleAspectFill
-        pIconView.clipsToBounds = true
-        pIconView.frame.size = CGSize(width: 50, height: 50)
+        let pIconView = BarViewItem(image: #imageLiteral(resourceName: "globeIcon"))
         customNavBar.addItem(iconView: pIconView)
+        posts.barViewItem = pIconView
         
-        let chats = storyboard.instantiateViewController(withIdentifier: "chats")
-        
+        let chats = storyboard.instantiateViewController(withIdentifier: "chats") as! ChatsCollectionViewController
         add(Tab: chats)
-        let chatIconView = UIImageView()
-        chatIconView.image = #imageLiteral(resourceName: "speechBubble")
-        chatIconView.contentMode = .scaleAspectFill
-        chatIconView.clipsToBounds = true
-        chatIconView.frame.size = CGSize(width: 50, height: 50)
+        let chatIconView = BarViewItem(image: #imageLiteral(resourceName: "speechBubble"))
         customNavBar.addItem(iconView: chatIconView)
+        chats.barViewItem = chatIconView
         
         bottomScrollView.contentOffset.x = bottomScrollView.frame.width
-        
-        
+
         customNavBar.observeChange { (direction) in
             var contentOffset = self.bottomScrollView.contentOffset
             if direction == .right{

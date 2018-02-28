@@ -16,10 +16,14 @@ class ChatsCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var titleLabel: UILabel!
     
+    @IBOutlet weak var badgeLabel: UILabel!
+    
     override func prepareForReuse() {
         imageView.image = nil
         observation?.invalidate()
         cellData = nil
+        badgeLabel.text = nil
+        badgeLabel.isHidden = true
     }
     
     override func awakeFromNib() {
@@ -28,6 +32,7 @@ class ChatsCollectionViewCell: UICollectionViewCell {
     }
     var observation:NSKeyValueObservation?
     var observationProfilePic:NSKeyValueObservation?
+    var observationNumOfUnseenMsgs:NSKeyValueObservation?
     func setCellDataModel(_ cellData:ChatsCellData) {
         self.cellData = cellData
         updateUI()
@@ -47,6 +52,16 @@ class ChatsCollectionViewCell: UICollectionViewCell {
             }
         })
         
+        observationNumOfUnseenMsgs = self.cellData?.observe((\.unseenMessages), changeHandler: { (data, change) in
+            
+            if data.unseenMessages > 0{
+                self.badgeLabel.text = String(data.unseenMessages)
+                self.badgeLabel.isHidden = false
+            }else{
+                self.badgeLabel.isHidden = true
+            }
+        })
+        
         
         
     }
@@ -54,6 +69,7 @@ class ChatsCollectionViewCell: UICollectionViewCell {
     
     
     func updateUI() {
+        print("update ui called")
         if self.cellData?.downloaded == true{
             titleLabel.text = self.cellData?.user.name
             messageLabel.text = self.cellData?.lastMessage.text

@@ -11,56 +11,43 @@ import AVFoundation
 import Firebase
 private let reuseIdentifier = "Cell"
 
-class ChatsCollectionViewController: UICollectionViewController {
+class ChatsCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
+    var barViewItem:BarViewItem?
     var messageData = [MessageData]()
     var currentOpenMessageThreadId:String?
-    var threads = [Thread]()
+    
     var cellData = [ChatsCellData]()
     var firstLaunch = true //used to decide when to play sound when new message arrives
+    
+    var observerForUnseenMessages:NSObjectProtocol?
     override func viewDidLoad() {
         super.viewDidLoad()
-//        Messages.shared.addMessageListener { (messageDataArray) in
-//            self.messageData = messageDataArray
-//            self.collectionView?.reloadData()
-//            if self.firstLaunch{
-//                //Don't play any sounds
-//                self.firstLaunch = false
-//                return
-//            }
-//
-//            //Decide to play sound or not
-//            for msgData in messageDataArray{
-//                guard let message = msgData.messages.last else{
-//                    continue
-//                }
-//                if message.senderId == Auth.auth().currentUser?.uid{
-//                    continue
-//                }
-//                if message.seen == false && message.senderId != self.currentOpenMessageThreadId{
-//                    //make noise
-//                    AudioServicesPlaySystemSound(1007)
-//                }
-//            }
-//        }
         startObservingThreads()
-        //let flowLayout = collectionViewLayout as! UICollectionViewFlowLayout
-        //flowLayout.itemSize = CGSize(width: UIScreen.main.bounds.width - 40, height:90)
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Register cell classes
-        //self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-
-        // Do any additional setup after loading the view.
+        observerForUnseenMessages = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "UnseenMessageNumberChange"), object: nil, queue: OperationQueue.main, using: { (notification) in
+            var totalUnseen = 0
+            for d in self.cellData{
+                totalUnseen += d.unseenMessages
+            }
+            self.barViewItem?.setBadgeValue(toValue: totalUnseen)
+            let userInfo = notification.userInfo
+            if userInfo?["threadId"] as? String != self.currentOpenMessageThreadId, let unseen = userInfo?["unseenMessages"] as? Int, unseen > 0, self.firstLaunch == false{
+                self.beep()
+            }
+        })
+    }
+    
+    func beep() {
+        AudioServicesPlaySystemSound(1007)
     }
     
     func startObservingThreads() {
        let threadsRef = Firestore.firestore().collection("users").document(Auth.auth().currentUser!.uid).collection("threads")
         threadsRef.addSnapshotListener { (ss, err) in
-            print("Snapshot listener for observing threads returned")
+           
             if let error = err{
                 let alert = UIAlertController.createAlert(title: "Error Downloading Messages", message: error.localizedDescription)
                 self.present(alert, animated: true, completion: nil)
+                
             }
             
             if let snapshot = ss{
@@ -70,19 +57,19 @@ class ChatsCollectionViewController: UICollectionViewController {
                     let thread = Thread.initWith(data: data)
                     threads.append(thread)
                 }
-                self.threads = threads
+               
                 
                 for thread in threads{
                     let cellData = ChatsCellData.initWith(thread: thread)
                     if !self.cellData.contains(cellData){
                         cellData.beginDownloading()
                         self.cellData.append(cellData)
-                        print("Self not contain chat data so I add")
+                        
                     }
                     
                     
                 }
-                
+                self.firstLaunch = false
                 self.collectionView?.reloadData()
             }
         }
@@ -161,7 +148,7 @@ class ChatsCollectionViewController: UICollectionViewController {
         messageThreadController.user = clickedMessageData.user
         messageThreadController.thread = clickedMessageData.thread
         navigationController?.pushViewController(messageThreadController, animated: true)
-        currentOpenMessageThreadId = clickedMessageData.user.id
+        currentOpenMessageThreadId = clickedMessageData.thread.id
     }
 
     /*
@@ -192,6 +179,12 @@ class ChatsCollectionViewController: UICollectionViewController {
     
     }
     */
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: min(UIScreen.main.bounds.width - 10, 420), height: 90)
+    }
+    
+    
 
 }
 

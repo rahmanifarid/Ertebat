@@ -56,7 +56,7 @@ class TextPostCollectionViewCell: UICollectionViewCell {
             imageView.image = postData?.image
         }else{
             observation = postData?.observe((\.percentImageDownloaded), changeHandler: { (post, change) in
-                print("Percent Downloaded\(post.percentImageDownloaded)")
+                //print("Percent Downloaded\(post.percentImageDownloaded)")
                 if post.percentImageDownloaded == 100{
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
                         self.imageView.alpha = 0
